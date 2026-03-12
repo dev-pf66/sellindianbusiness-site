@@ -1,36 +1,121 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# SellIndianBusiness.com
 
-## Getting Started
+Complete website for helping Indian business owners sell their businesses confidentially and for fair prices.
 
-First, run the development server:
+## 🚀 Built With
+
+- **Next.js 15** (App Router)
+- **TypeScript**
+- **Tailwind CSS**
+- **React Markdown** for MDX content
+- Full SEO implementation with schema markup
+
+## 📁 Site Structure
+
+### Core Pages
+- **Homepage** (`/`) - Hero, process overview, testimonials, FAQ
+- **How It Works** (`/how-it-works`) - 6-step process explanation
+- **Free Valuation** (`/free-valuation`) - Lead capture form
+- **Resources** (`/resources`) - Hub linking to all guides
+- **Newsletter** (`/newsletter`) - Newsletter signup
+- **About** (`/about`) - About Pocket Fund
+- **Contact** (`/contact`) - Contact form
+- **Privacy** (`/privacy`) - Privacy policy
+
+### Guide Pages (5 comprehensive guides)
+- `/guide/why-sell` - Why Sell Your Business
+- `/guide/valuation` - How to Value Your Business
+- `/guide/preparing` - Preparing for Sale
+- `/guide/sale-process` - The Sale Process Explained
+- `/guide/what-buyers-want` - What Buyers Look For
+
+### Blog (21 posts)
+All content from `/content/blog/` covering:
+- Valuation methods and multiples
+- Exit strategies and timing
+- Tax implications
+- Legal considerations
+- Industry-specific guides (manufacturing, retail, restaurant, ecommerce, IT)
+- Common mistakes
+- Due diligence preparation
+
+## 🎯 SEO Features
+
+### Schema Markup
+- ✅ Organization schema (site-wide)
+- ✅ Article schema (all blog posts & guides)
+- ✅ FAQ schema (FAQ sections)
+- ✅ HowTo schema (process pages)
+- ✅ Breadcrumb schema (all content pages)
+
+### Technical SEO
+- ✅ Sitemap.xml (auto-generated, 42 pages)
+- ✅ Robots.txt
+- ✅ Open Graph meta tags
+- ✅ Proper heading hierarchy
+- ✅ Mobile responsive
+- ✅ Fast page load (static generation)
+
+## 📊 Stats
+
+- **Total Pages**: 42
+- **Blog Posts**: 21
+- **Guide Pages**: 5
+- **Static Pages**: 10+
+- **Build Time**: ~19s
+- **All pages**: Static HTML (pre-rendered)
+
+## 🛠️ Development
 
 ```bash
+# Install dependencies
+npm install
+
+# Run dev server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+
+# Build for production
+npm run build
+
+# Start production server
+npm start
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 📝 Content Management
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+All content lives in `/content/`:
+- `/content/blog/*.md` - Blog posts
+- `/content/guide/*.md` - Guide pages
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Content is loaded via:
+- `lib/blog.ts` - Blog post utilities
+- `lib/mdx.ts` - MDX content loading
 
-## Learn More
+## 🎨 Components
 
-To learn more about Next.js, take a look at the following resources:
+### Core Components
+- `components/Navbar.tsx` - Site navigation
+- `components/Footer.tsx` - Site footer
+- `components/NewsletterSignup.tsx` - Email capture
+- `components/MDXContent.tsx` - Markdown renderer
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Schema Components
+- `components/schema/OrganizationSchema.tsx`
+- `components/schema/ArticleSchema.tsx`
+- `components/schema/FAQSchema.tsx`
+- `components/schema/BreadcrumbSchema.tsx`
+- `components/schema/HowToSchema.tsx`
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 🔗 Related
 
-## Deploy on Vercel
+Sister site: [BuyIndianBusiness.com](https://github.com/dev-pf66/buyabusiness-india-site)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 📄 License
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Private - Pocket Fund Initiative
+
+---
+
+**Built by**: Pocket Fund  
+**Purpose**: Educational content and lead generation for business sellers in India  
+**Target Audience**: Indian SMB owners considering an exit

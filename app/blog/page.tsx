@@ -41,9 +41,9 @@ export default function BlogPage() {
                   className="group bg-white rounded-xl border border-gray-200 overflow-hidden hover:border-emerald-300 hover:shadow-lg transition-all"
                 >
                   <div className="p-6">
-                    {post.category && (
+                    {post.tags && post.tags.length > 0 && (
                       <span className="inline-block px-3 py-1 text-xs font-medium text-emerald-700 bg-emerald-50 rounded-full mb-3">
-                        {post.category}
+                        {post.tags[0]}
                       </span>
                     )}
                     <h2 className="text-xl font-semibold text-gray-900 group-hover:text-emerald-600 transition-colors mb-2">

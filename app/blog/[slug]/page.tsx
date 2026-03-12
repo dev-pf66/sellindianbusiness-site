@@ -1,143 +1,139 @@
-import { Metadata } from "next";
 import { notFound } from "next/navigation";
-import Link from "next/link";
-import { getBlogPost, getAllBlogPosts } from "@/lib/blog";
+import { getAllPosts, getPostBySlug, getRelatedPosts } from "@/lib/blog";
+import { MDXContent } from "@/components/MDXContent";
 import { ArticleSchema } from "@/components/schema/ArticleSchema";
-import { MDXRemote } from "next-mdx-remote/rsc";
-
-interface BlogPostPageProps {
-  params: {
-    slug: string;
-  };
-}
+import { BreadcrumbSchema } from "@/components/schema/BreadcrumbSchema";
+import { FAQSchema } from "@/components/schema/FAQSchema";
+import { NewsletterSignup } from "@/components/NewsletterSignup";
+import Link from "next/link";
+import type { Metadata } from "next";
 
 export async function generateStaticParams() {
-  const posts = getAllBlogPosts();
-  return posts.map((post) => ({
-    slug: post.slug,
-  }));
+  const posts = getAllPosts();
+  return posts.map((post) => ({ slug: post.slug }));
 }
 
-export async function generateMetadata({
-  params,
-}: BlogPostPageProps): Promise<Metadata> {
-  const post = getBlogPost(params.slug);
-
+export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+  const post = getPostBySlug(params.slug);
+  
   if (!post) {
-    return {
-      title: "Post Not Found",
-    };
+    return {};
   }
 
   return {
     title: post.title,
     description: post.description,
-    openGraph: {
-      title: post.title,
-      description: post.description,
-      type: "article",
-      publishedTime: post.date,
-      modifiedTime: post.lastUpdated || post.date,
-    },
   };
 }
 
-export default function BlogPostPage({ params }: BlogPostPageProps) {
-  const post = getBlogPost(params.slug);
+export default function BlogPostPage({ params }: { params: { slug: string } }) {
+  const post = getPostBySlug(params.slug);
 
   if (!post) {
     notFound();
   }
+
+  const relatedPosts = getRelatedPosts(post.slug, post.relatedPosts);
+  
+  const breadcrumbs = [
+    { name: "Home", url: "https://sellindianbusiness.com" },
+    { name: "Blog", url: "https://sellindianbusiness.com/blog" },
+    { name: post.title, url: `https://sellindianbusiness.com/blog/${post.slug}` },
+  ];
 
   return (
     <>
       <ArticleSchema
         title={post.title}
         description={post.description}
-        datePublished={post.date}
-        dateModified={post.lastUpdated}
-        authorName={post.author}
         url={`https://sellindianbusiness.com/blog/${post.slug}`}
+        datePublished={post.date}
+        dateModified={post.date}
       />
+      <BreadcrumbSchema items={breadcrumbs} />
+      {post.faqs && post.faqs.length > 0 && <FAQSchema faqs={post.faqs} />}
 
-      <article className="bg-white">
+      <article className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        {/* Breadcrumb */}
+        <nav className="text-sm text-gray-500 mb-6">
+          <Link href="/" className="hover:text-gray-700">
+            Home
+          </Link>
+          {" > "}
+          <Link href="/blog" className="hover:text-gray-700">
+            Blog
+          </Link>
+          {" > "}
+          <span className="text-gray-900">{post.title}</span>
+        </nav>
+
         {/* Header */}
-        <header className="bg-gradient-to-b from-emerald-50 to-white py-16">
-          <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-            {post.category && (
-              <span className="inline-block px-3 py-1 text-sm font-medium text-emerald-700 bg-emerald-100 rounded-full mb-4">
-                {post.category}
-              </span>
-            )}
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">
-              {post.title}
-            </h1>
-            <p className="text-xl text-gray-600 mb-6">{post.description}</p>
-            <div className="flex items-center text-sm text-gray-500 gap-4">
-              <span>
-                {new Date(post.date).toLocaleDateString("en-IN", {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                })}
-              </span>
-              {post.author && <span>By {post.author}</span>}
-            </div>
+        <header className="mb-12">
+          <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-4">{post.title}</h1>
+          <div className="flex items-center gap-4 text-gray-600">
+            <time dateTime={post.date}>
+              {new Date(post.date).toLocaleDateString("en-IN", {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              })}
+            </time>
+            <span>•</span>
+            <span>{post.readingTime} min read</span>
           </div>
+          {post.tags && post.tags.length > 0 && (
+            <div className="flex flex-wrap gap-2 mt-4">
+              {post.tags.map((tag) => (
+                <span
+                  key={tag}
+                  className="inline-flex items-center rounded-full bg-blue-50 px-3 py-1 text-sm text-blue-700"
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+          )}
         </header>
 
         {/* Content */}
-        <div className="py-16">
-          <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-            <div className="prose prose-lg max-w-none">
-              <MDXRemote source={post.content} />
+        <MDXContent content={post.content} />
+
+        {/* Newsletter Signup */}
+        <NewsletterSignup />
+
+        {/* Related Posts */}
+        {relatedPosts.length > 0 && (
+          <div className="mt-16 pt-16 border-t border-gray-200">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">Related Articles</h2>
+            <div className="grid md:grid-cols-3 gap-6">
+              {relatedPosts.map((relatedPost) => (
+                <Link
+                  key={relatedPost.slug}
+                  href={`/blog/${relatedPost.slug}`}
+                  className="block group"
+                >
+                  <h3 className="font-semibold text-gray-900 group-hover:text-blue-600 transition-colors mb-2">
+                    {relatedPost.title}
+                  </h3>
+                  <p className="text-sm text-gray-600 line-clamp-2">{relatedPost.description}</p>
+                </Link>
+              ))}
             </div>
           </div>
-        </div>
+        )}
 
-        {/* CTA Section */}
-        <section className="py-16 bg-gray-50">
-          <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-            <div className="bg-emerald-600 rounded-2xl p-8 md:p-12 text-center text-white">
-              <h2 className="text-3xl font-bold mb-4">
-                Ready to Sell Your Business?
-              </h2>
-              <p className="text-lg text-emerald-100 mb-8">
-                Get a free, confidential valuation and connect with serious buyers.
-              </p>
-              <Link
-                href="/free-valuation"
-                className="inline-flex items-center justify-center rounded-lg bg-white px-8 py-4 text-lg font-semibold text-emerald-600 hover:bg-emerald-50 transition-colors"
-              >
-                Get Your Free Valuation
-              </Link>
-            </div>
-          </div>
-        </section>
-
-        {/* Back to Blog */}
-        <div className="py-8 border-t border-gray-200">
-          <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-            <Link
-              href="/blog"
-              className="inline-flex items-center text-emerald-600 font-semibold hover:text-emerald-700"
-            >
-              <svg
-                className="mr-2 w-4 h-4"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M15 19l-7-7 7-7"
-                />
-              </svg>
-              Back to Blog
-            </Link>
-          </div>
+        {/* CTA */}
+        <div className="mt-16 bg-blue-50 rounded-xl p-8 text-center">
+          <h3 className="text-2xl font-bold text-gray-900 mb-4">Ready to Sell Your Business?</h3>
+          <p className="text-gray-600 mb-6">
+            Get a free, confidential valuation and connect with serious buyers.
+          </p>
+          <Link
+            href="/free-valuation"
+            className="inline-flex items-center justify-center rounded-lg bg-blue-600 px-8 py-3 text-lg font-semibold text-white hover:bg-blue-700 transition-colors"
+          >
+            Get Your Free Valuation →
+          </Link>
         </div>
       </article>
     </>
